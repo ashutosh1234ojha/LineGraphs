@@ -9,7 +9,7 @@ class LineGraphActivity :AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_line_graph)
-
+//
         val lineGraphView = findViewById<LineGraphView>(R.id.chart1)
         val values = floatArrayOf(10f, 20f, 30f, 40f, 50f, 60f, 70f, 80f, 90f, 100f)
         val horLabels =

@@ -1,4 +1,4 @@
-package com.example.graphs.chart;
+package com.example.graphs.line;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -22,7 +22,7 @@ import java.util.List;
 /**
  */
 
-public class LineChartView extends View {
+public class LineChartViewOne extends View {
 
     private Paint linePaint;
     private Paint pointPaint;
@@ -80,15 +80,15 @@ public class LineChartView extends View {
     private float currentValue = 0f;
     private boolean isAnimating = false;
 
-    public LineChartView(Context context) {
+    public LineChartViewOne(Context context) {
         this(context, null);
     }
 
-    public LineChartView(Context context, AttributeSet attrs) {
+    public LineChartViewOne(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public LineChartView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LineChartViewOne(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setupView();

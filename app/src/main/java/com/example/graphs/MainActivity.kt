@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
 
     //    setData()
+
+        val graphView= findViewById<LineGraphViewKotlin>(R.id.chart1)
+        graphView.setAmountListLength(7)
+        graphView.setTimeListLength(8)
+
+
     }
 
     private fun setData() {
@@ -36,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         //  lineDataSet.setColors(ColorTemplate.JOYFUL_COLORS)
         lineDataSet.valueTextColor = Color.BLACK
         lineDataSet.valueTextSize = 18f
-        chart.setPinchZoom(true);
+        chart.setPinchZoom(true)
         chart.setDrawGridBackground(true)
 
 //        val l = chart.legend

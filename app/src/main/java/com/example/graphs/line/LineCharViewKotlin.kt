@@ -1,14 +1,10 @@
 package com.example.graphs.line
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
-import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import java.util.*
 
 
@@ -28,11 +24,12 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var mWidth = 0
     private var mHeight = 0
     private val dataList: MutableList<Data> = ArrayList()
+    private val timeList: MutableList<Time> = ArrayList()
     private var linePoints: Array<Point?>? = null
     private var stepStart = 0
     private var stepEnd = 0
     private var stepSpace = 0
-    private val stepSpaceDefault = 10
+    private val stepSpaceDefault = 50
     private var stepSpaceDP = stepSpaceDefault
     private var topSpace = 0
     private var bottomSpace = 0
@@ -40,7 +37,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private val tablePaddingDP = 20
     private var maxValue = 0
     private var minValue = 0
-    private val rulerValueDefault = 10
+    private val rulerValueDefault = 30
     private var rulerValue = rulerValueDefault
     private var rulerValuePadding
             = 0
@@ -103,29 +100,29 @@ class LineCharViewKotlin @JvmOverloads constructor(
         resetParam()
     }
 
-    private fun initAnim() {
-        valueAnimator = ValueAnimator.ofFloat(0f, 1f).setDuration((dataList.size * 150).toLong())
-        valueAnimator.setInterpolator(AccelerateDecelerateInterpolator())
-        valueAnimator.addUpdateListener(AnimatorUpdateListener { animation ->
-            currentValue = animation.animatedValue as Float
-            postInvalidate()
-        })
-        valueAnimator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-                super.onAnimationStart(animation)
-                currentValue = 0f
-                isAnimating = true
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                super.onAnimationEnd(animation)
-                currentValue = 1f
-                isAnimating = false
-                isPlayAnim = false
-            }
-        })
-        valueAnimator.setStartDelay(500)
-    }
+//    private fun initAnim() {
+//        valueAnimator = ValueAnimator.ofFloat(0f, 1f).setDuration((dataList.size * 150).toLong())
+//        valueAnimator.setInterpolator(AccelerateDecelerateInterpolator())
+//        valueAnimator.addUpdateListener(AnimatorUpdateListener { animation ->
+//            currentValue = animation.animatedValue as Float
+//            postInvalidate()
+//        })
+//        valueAnimator.addListener(object : AnimatorListenerAdapter() {
+//            override fun onAnimationStart(animation: Animator) {
+//                super.onAnimationStart(animation)
+//                currentValue = 0f
+//                isAnimating = true
+//            }
+//
+//            override fun onAnimationEnd(animation: Animator) {
+//                super.onAnimationEnd(animation)
+//                currentValue = 1f
+//                isAnimating = false
+//                isPlayAnim = false
+//            }
+//        })
+//        valueAnimator.setStartDelay(500)
+//    }
 
     private fun resetParam() {
         linePath!!.reset()
@@ -138,7 +135,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         bottomSpace = tablePadding
         topSpace = bottomSpace
         linePoints = arrayOfNulls(dataList.size)
-        initAnim()
+   //     initAnim()
         isInitialized = false
     }
 
@@ -158,9 +155,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         mHeight = h
     }
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-    }
+
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -170,7 +165,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
             mHeight / 2f + (viewDrawHeight + topSpace + bottomSpace) / 2f
         )
         if (!isInitialized) {
-            setupLine()
+            setupLine() //X- axis
         }
         if (isShowTable) {
             drawTable(canvas)
@@ -252,9 +247,12 @@ class LineCharViewKotlin @JvmOverloads constructor(
         if (linePoints == null) return
         for (i in linePoints!!.indices) {
             val point = linePoints!![i] ?: break
-            drawRulerXText(canvas, i.toString(), linePoints!![i]!!.x.toFloat(), 0f)
+            val text1= timeList[i];
+            drawRulerXText(canvas, text1.value, linePoints!![i]!!.x.toFloat(), 0f)
+//            drawRulerXText(canvas, i.toString(), linePoints!![i]!!.x.toFloat(), 0f)
         }
     }
+
 
 
     private fun drawLine(canvas: Canvas) {
@@ -360,13 +358,16 @@ class LineCharViewKotlin @JvmOverloads constructor(
     }
 
 
-    fun setData(dataList: List<Data>?) {
-        if (dataList == null) {
+    fun setData(dataList: List<Data>?,timeList: List<Time>?) {
+        if (dataList == null||timeList==null) {
             throw RuntimeException("dataList cannot is null!")
         }
         if (dataList.isEmpty()) return
+        if (timeList.isEmpty()) return
         this.dataList.clear()
+        this.timeList.clear()
         this.dataList.addAll(dataList)
+        this.timeList.addAll(timeList)
         maxValue = Collections.max(
             this.dataList
         ) { o1, o2 -> o1.value - o2.value }.value
@@ -376,58 +377,33 @@ class LineCharViewKotlin @JvmOverloads constructor(
         refreshLayout()
     }
 
-    //    public void setShowTable(boolean showTable) {
-    //        isShowTable = showTable;
-    //        refreshLayout();
-    //    }
-
-    //    public void setBezierLine(boolean isBezier) {
-    //        isBezierLine = isBezier;
-    //        refreshLayout();
-    //    }
-
-    fun setCubePoint(isCube: Boolean) {
-        isCubePoint = isCube
-        refreshLayout()
-    }
 
 
-    fun setRulerYSpace(space: Int) {
-        var space = space
-        if (space <= 0) {
-            space = rulerValueDefault
-        }
-        rulerValue = space
-        refreshLayout()
-    }
+//    fun setCubePoint(isCube: Boolean) {
+//        isCubePoint = isCube
+//        refreshLayout()
+//    }
 
 
-    fun setStepSpace(dp: Int) {
-        var dp = dp
-        if (dp < stepSpaceDefault) {
-            dp = stepSpaceDefault
-        }
-        stepSpaceDP = dp
-        refreshLayout()
-    }
+//    fun setRulerYSpace(space: Int) {
+//        var space = space
+//        if (space <= 0) {
+//            space = rulerValueDefault
+//        }
+//        rulerValue = space
+//        refreshLayout()
+//    }
+//
+//
+//    fun setStepSpace(dp: Int) {
+//        var dp = dp
+//        if (dp < stepSpaceDefault) {
+//            dp = stepSpaceDefault
+//        }
+//        stepSpaceDP = dp
+//        refreshLayout()
+//    }
 
-
-    fun setPointWidth(dp: Float) {
-        var dp = dp
-        if (dp <= 0) {
-            dp = pointWidthDefault
-        }
-        pointWidthDP = dp
-        refreshLayout()
-    }
-
-
-    //    public void playAnim() {
-    //        this.isPlayAnim = true;
-    //        if (isAnimating) return;
-    //        if (valueAnimator != null) {
-    //            valueAnimator.start();
-    //        }
-    //    }
     class Data(var value: Int)
+    class Time(var value: String)
 }

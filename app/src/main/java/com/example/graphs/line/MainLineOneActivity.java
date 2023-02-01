@@ -22,7 +22,7 @@ public class MainLineOneActivity extends AppCompatActivity {
     SeekBar sb_step_space;
 
 
-    LineChartViewOne lineChartView;
+    LineCharViewKotlin lineChartView;
 
     private int[] dataArr = new int[]{200, 100, 300, -20, 50, -80, 200, 100, 300, 50, 200, 150, 160, 100, 300, 50, 200, 150,
             300, 50, 200, 100, 150, 150};
@@ -32,15 +32,15 @@ public class MainLineOneActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line_one);
 
-        lineChartView = (LineChartViewOne) findViewById(R.id.line_chart_view);
+        lineChartView = (LineCharViewKotlin) findViewById(R.id.line_chart_view);
         sb_ruler_space = (SeekBar) findViewById(R.id.sb_ruler_space);
         tv_ruler_y = (TextView) findViewById(R.id.tv_ruler_y);
         sb_step_space = (SeekBar) findViewById(R.id.sb_step_space);
         tv_step_space = (TextView) findViewById(R.id.tv_step_space);
 
-        List<LineChartViewOne.Data> datas = new ArrayList<>();
+        List<LineCharViewKotlin.Data> datas = new ArrayList<>();
         for (int value : dataArr) {
-            LineChartViewOne.Data data = new LineChartViewOne.Data(value);
+            LineCharViewKotlin.Data data = new LineCharViewKotlin.Data(value);
             datas.add(data);
         }
         lineChartView.setData(datas);

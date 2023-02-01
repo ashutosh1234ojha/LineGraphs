@@ -70,8 +70,8 @@ public class LineChartViewOne extends View {
     private int pointTextColor = Color.parseColor("#009688");//锚点文本颜色
     private float pointTextSizeSP = 10f;//锚点文本大小
 
-    private boolean isShowTable = false;
-    private boolean isBezierLine = false;
+    private boolean isShowTable = true;
+    private boolean isBezierLine = false; // false = line and true=  curve
     private boolean isCubePoint = false;
     private boolean isInitialized = false;
     private boolean isPlayAnim = false;
@@ -96,10 +96,10 @@ public class LineChartViewOne extends View {
 
     private void setupView() {
         linePaint = new Paint();
-        linePaint.setAntiAlias(true);//抗锯齿
-        linePaint.setStyle(Paint.Style.STROKE);//STROKE描边FILL填充
+        linePaint.setAntiAlias(true);
+        linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setColor(lineColor);
-        linePaint.setStrokeWidth(dip2px(lineWidthDP));//边框宽度
+        linePaint.setStrokeWidth(dip2px(lineWidthDP));
 
         pointPaint = new Paint();
         pointPaint.setAntiAlias(true);
@@ -117,15 +117,15 @@ public class LineChartViewOne extends View {
         textRulerPaint.setAntiAlias(true);
         textRulerPaint.setStyle(Paint.Style.FILL);
         textRulerPaint.setTextAlign(Paint.Align.CENTER);
-        textRulerPaint.setColor(rulerTextColor);//文本颜色
-        textRulerPaint.setTextSize(sp2px(rulerTextSizeSP));//字体大小
+        textRulerPaint.setColor(rulerTextColor);
+        textRulerPaint.setTextSize(sp2px(rulerTextSizeSP));
 
         textPointPaint = new Paint();
         textPointPaint.setAntiAlias(true);
         textPointPaint.setStyle(Paint.Style.FILL);
         textPointPaint.setTextAlign(Paint.Align.CENTER);
-        textPointPaint.setColor(pointTextColor);//文本颜色
-        textPointPaint.setTextSize(sp2px(pointTextSizeSP));//字体大小
+        textPointPaint.setColor(pointTextColor);
+        textPointPaint.setTextSize(sp2px(pointTextSizeSP));
 
         linePath = new Path();
         tablePath = new Path();
@@ -180,13 +180,13 @@ public class LineChartViewOne extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = tablePadding + getTableEnd() + getPaddingLeft() + getPaddingRight();//计算自己的宽度
+        int width = tablePadding + getTableEnd() + getPaddingLeft() + getPaddingRight();
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);//父类期望的高度
+        int height = MeasureSpec.getSize(heightMeasureSpec);
         if (MeasureSpec.EXACTLY == heightMode) {
             height = getPaddingTop() + getPaddingBottom() + height;
         }
-        setMeasuredDimension(width, height);//设置自己的宽度和高度
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class LineChartViewOne extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(Color.TRANSPARENT);//绘制背景颜色
+        canvas.drawColor(Color.TRANSPARENT);
         canvas.translate(0f, mHeight / 2f + (getViewDrawHeight() + topSpace + bottomSpace) / 2f);//设置画布中心点垂直居中
 
         if (!isInitialized) {
@@ -448,7 +448,6 @@ public class LineChartViewOne extends View {
         postInvalidate();
     }
 
-    /*-------------可操作方法---------------*/
 
     /**
      * 设置数据
@@ -485,20 +484,20 @@ public class LineChartViewOne extends View {
      *
      * @param showTable
      */
-    public void setShowTable(boolean showTable) {
-        isShowTable = showTable;
-        refreshLayout();
-    }
+//    public void setShowTable(boolean showTable) {
+//        isShowTable = showTable;
+//        refreshLayout();
+//    }
 
     /**
      * 设置是否是贝塞尔曲线
      *
      * @param isBezier
      */
-    public void setBezierLine(boolean isBezier) {
-        isBezierLine = isBezier;
-        refreshLayout();
-    }
+//    public void setBezierLine(boolean isBezier) {
+//        isBezierLine = isBezier;
+//        refreshLayout();
+//    }
 
     /**
      * 设置锚点形状
@@ -552,13 +551,13 @@ public class LineChartViewOne extends View {
     /**
      * 播放动画
      */
-    public void playAnim() {
-        this.isPlayAnim = true;
-        if (isAnimating) return;
-        if (valueAnimator != null) {
-            valueAnimator.start();
-        }
-    }
+//    public void playAnim() {
+//        this.isPlayAnim = true;
+//        if (isAnimating) return;
+//        if (valueAnimator != null) {
+//            valueAnimator.start();
+//        }
+//    }
 
     public static class Data {
 

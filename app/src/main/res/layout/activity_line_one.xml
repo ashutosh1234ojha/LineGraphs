@@ -37,33 +37,33 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="doAnimation"
-                android:text="animation"/>
+<!--            <Button-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="doAnimation"-->
+<!--                android:text="animation"/>-->
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="bezierModelToggle"
-                android:text="bezier Toggle"/>
+<!--            <Button-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="bezierModelToggle"-->
+<!--                android:text="bezier Toggle"/>-->
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="pointModelToggle"
-                android:text="point Toggle"/>
+<!--            <Button-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="pointModelToggle"-->
+<!--                android:text="point Toggle"/>-->
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="tableToggle"
-                android:text="table Toggle"/>
+<!--            <Button-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:onClick="tableToggle"-->
+<!--                android:text="table Toggle"/>-->
 
         </LinearLayout>
 

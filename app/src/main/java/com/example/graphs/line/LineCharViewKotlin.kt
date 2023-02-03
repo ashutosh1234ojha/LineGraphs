@@ -231,7 +231,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
             drawRulerYText(
                 canvas,
-                startValue.toString(),
+                "$"+startValue.toString(),
                 stepStart.toFloat(),
                 startHeight.toFloat()
             )
@@ -254,7 +254,9 @@ class LineCharViewKotlin @JvmOverloads constructor(
     }
 
 
-
+    /**
+     * This draw the lines of the
+     */
     private fun drawLine(canvas: Canvas) {
         if (isPlayAnim) {
             val dst = Path()

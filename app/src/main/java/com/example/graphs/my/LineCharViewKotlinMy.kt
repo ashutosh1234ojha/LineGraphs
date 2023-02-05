@@ -161,10 +161,20 @@ class LineCharViewKotlinMy @JvmOverloads constructor(
    //     drawFill(canvas)
     }
     private fun drawFill(canvas: Canvas?) {
-        fillPath!!.reset()
-        fillPath?.addPath(linePath!!)
-        canvas?.drawPath(fillPath!!, fillPaint!!)
+        //        fillPath!!.reset()
+//        fillPath?.addPath(linePath!!)
+//        canvas?.drawPath(fillPath!!, fillPaint!!)
 
+        fillPath!!.reset()
+        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(),0f)
+        linePoints?.forEach {
+            fillPath?.lineTo(it?.x!!.toFloat(),it?.y!!.toFloat())
+
+        }
+        fillPath?.lineTo(linePoints!![linePoints!!.size-1]!!.x.toFloat(),0f)
+
+
+        canvas?.drawPath(fillPath!!, fillPaint!!)
 
 
     }

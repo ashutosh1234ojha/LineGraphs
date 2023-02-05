@@ -1,15 +1,13 @@
-package com.example.graphs.line
-
+package com.example.graphs.chart
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.graphics.alpha
 import java.util.*
 
 
-class LineCharViewKotlin @JvmOverloads constructor(
+class LineChartViewRaw @JvmOverloads constructor(
     context: Context?,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -20,7 +18,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var tablePaint: Paint? = null
     private var textRulerPaint: Paint? = null
     private var textPointPaint: Paint? = null
-    private var mainPath: Path? = null
     private var linePath: Path? = null
     private var tablePath: Path? = null
     private var mWidth = 0
@@ -41,19 +38,20 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var minValue = 0
     private val rulerValueDefault = 30
     private var rulerValue = rulerValueDefault
-    private var rulerValuePadding = 0
+    private var rulerValuePadding
+            = 0
     private val rulerValuePaddingDP = 8
     private val heightPercent = 0.618f
-    private val lineColor = Color.parseColor("#000080")
+    private val lineColor = Color.parseColor("#286DD4")
     private val lineWidthDP = 2f
-    private val pointColor = Color.parseColor("#000080")
+    private val pointColor = Color.parseColor("#FF4081")
     private val pointWidthDefault = 8f
     private var pointWidthDP = pointWidthDefault
     private val tableColor = Color.parseColor("#BBBBBB")
     private val tableWidthDP = 0.5f
     private val rulerTextColor = tableColor
     private val rulerTextSizeSP = 10f
-    private val pointTextColor = Color.parseColor("#000000")
+    private val pointTextColor = Color.parseColor("#009688")
     private val pointTextSizeSP = 10f
     private val isShowTable = true
     private val isBezierLine = false // false = line and true=  curve
@@ -63,8 +61,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
     lateinit var valueAnimator: ValueAnimator
     private var currentValue = 0f
     private var isAnimating = false
-    private var fillPaint: Paint? = null
-    private var fillPath: Path? = null
 
     init {
         setupView()
@@ -98,24 +94,38 @@ class LineCharViewKotlin @JvmOverloads constructor(
         textPointPaint!!.textAlign = Paint.Align.CENTER
         textPointPaint!!.color = pointTextColor
         textPointPaint!!.textSize = sp2px(pointTextSizeSP).toFloat()
-        mainPath = Path()
         linePath = Path()
         tablePath = Path()
-
-
-        fillPaint = Paint()
-        fillPaint!!.isAntiAlias = true
-        fillPaint!!.style = Paint.Style.FILL
-        fillPaint!!.color = Color.parseColor("#BFD7ED")  // desired fill color
-        fillPath = Path()
         resetParam()
     }
 
+//    private fun initAnim() {
+//        valueAnimator = ValueAnimator.ofFloat(0f, 1f).setDuration((dataList.size * 150).toLong())
+//        valueAnimator.setInterpolator(AccelerateDecelerateInterpolator())
+//        valueAnimator.addUpdateListener(AnimatorUpdateListener { animation ->
+//            currentValue = animation.animatedValue as Float
+//            postInvalidate()
+//        })
+//        valueAnimator.addListener(object : AnimatorListenerAdapter() {
+//            override fun onAnimationStart(animation: Animator) {
+//                super.onAnimationStart(animation)
+//                currentValue = 0f
+//                isAnimating = true
+//            }
+//
+//            override fun onAnimationEnd(animation: Animator) {
+//                super.onAnimationEnd(animation)
+//                currentValue = 1f
+//                isAnimating = false
+//                isPlayAnim = false
+//            }
+//        })
+//        valueAnimator.setStartDelay(500)
+//    }
 
     private fun resetParam() {
         linePath!!.reset()
         tablePath!!.reset()
-        mainPath!!.reset()
         stepSpace = dip2px(stepSpaceDP.toFloat())
         tablePadding = dip2px(tablePaddingDP.toFloat())
         rulerValuePadding = dip2px(rulerValuePaddingDP.toFloat())
@@ -124,6 +134,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         bottomSpace = tablePadding
         topSpace = bottomSpace
         linePoints = arrayOfNulls(dataList.size)
+        //     initAnim()
         isInitialized = false
     }
 
@@ -144,6 +155,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
     }
 
 
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(Color.TRANSPARENT)
@@ -159,17 +171,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
         drawLine(canvas)
         drawLinePoints(canvas)
-        drawFill(canvas)
     }
-    private fun drawFill(canvas: Canvas?) {
-        fillPath!!.reset()
-        fillPath?.addPath(linePath!!)
-        canvas?.drawPath(fillPath!!, fillPaint!!)
-
-
-
-    }
-
 
     private fun drawText(canvas: Canvas, textPaint: Paint?, text: String, x: Float, y: Float) {
         canvas.drawText(text, x, y, textPaint!!)
@@ -215,12 +217,10 @@ class LineCharViewKotlin @JvmOverloads constructor(
         val rulerMaxCount = if (maxValue % rulerValue > 0) rulerCount + 1 else rulerCount
         val rulerMax = rulerValue * rulerMaxCount + rulerValueDefault
         tablePath!!.moveTo(stepStart.toFloat(), -getValueHeight(rulerMax).toFloat())
-        tablePath!!.lineTo(stepStart.toFloat(), -20f)
-        tablePath!!.lineTo(tableEnd.toFloat(), -20f)
-        var startValue = rulerValueDefault - if (rulerValueDefault > 0) 0 else rulerValueDefault % rulerValue
-        var startValueTemp = minValue - if (minValue > 0) 0 else minValue % rulerValue
+        tablePath!!.lineTo(stepStart.toFloat(), 0f)
+        tablePath!!.lineTo(tableEnd.toFloat(), 0f)
+        var startValue = minValue - if (minValue > 0) 0 else minValue % rulerValue
         val endValue = maxValue + rulerValue
-
 
 
         do {
@@ -230,7 +230,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
             drawRulerYText(
                 canvas,
-                "$" + startValue.toString(),
+                "$"+startValue.toString(),
                 stepStart.toFloat(),
                 startHeight.toFloat()
             )
@@ -238,12 +238,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
         } while (startValue < endValue)
         canvas.drawPath(tablePath!!, tablePaint!!)
 
-        drawRulerYText(
-            canvas,
-            "$0",
-            stepStart.toFloat(),
-            -getValueHeight(startValueTemp).toFloat() + 30
-        )
         drawRulerXValue(canvas)
     }
 
@@ -252,7 +246,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         if (linePoints == null) return
         for (i in linePoints!!.indices) {
             val point = linePoints!![i] ?: break
-            val text1 = timeList[i];
+            val text1= timeList[i];
             drawRulerXText(canvas, text1.value, linePoints!![i]!!.x.toFloat(), 0f)
 //            drawRulerXText(canvas, i.toString(), linePoints!![i]!!.x.toFloat(), 0f)
         }
@@ -365,8 +359,8 @@ class LineCharViewKotlin @JvmOverloads constructor(
     }
 
 
-    fun setData(dataList: List<Data>?, timeList: List<Time>?) {
-        if (dataList == null || timeList == null) {
+    fun setData(dataList: List<Data>?,timeList: List<Time>?) {
+        if (dataList == null||timeList==null) {
             throw RuntimeException("dataList cannot is null!")
         }
         if (dataList.isEmpty()) return
@@ -383,6 +377,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         ) { o1, o2 -> o1.value - o2.value }.value
         refreshLayout()
     }
+
 
 
 //    fun setCubePoint(isCube: Boolean) {

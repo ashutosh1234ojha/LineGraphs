@@ -1,15 +1,14 @@
-package com.example.graphs.line
+package com.example.graphs.my
 
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.graphics.alpha
 import java.util.*
 
 
-class LineCharViewKotlin @JvmOverloads constructor(
+class LineCharViewKotlinMy @JvmOverloads constructor(
     context: Context?,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -159,7 +158,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
         drawLine(canvas)
         drawLinePoints(canvas)
-        drawFill(canvas)
+   //     drawFill(canvas)
     }
     private fun drawFill(canvas: Canvas?) {
         fillPath!!.reset()

@@ -166,13 +166,14 @@ class LineCharViewKotlin @JvmOverloads constructor(
 //        fillPath?.addPath(linePath!!)
 //        canvas?.drawPath(fillPath!!, fillPaint!!)
 
+        val  offset = (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue)+rulerValueDefault).toFloat()
         fillPath!!.reset()
-        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(),0f)
+        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(),offset)
         linePoints?.forEach {
             fillPath?.lineTo(it?.x!!.toFloat(),it?.y!!.toFloat())
 
         }
-        fillPath?.lineTo(linePoints!![linePoints!!.size-1]!!.x.toFloat(),0f)
+        fillPath?.lineTo(linePoints!![linePoints!!.size-1]!!.x.toFloat(),offset)
 
 
         canvas?.drawPath(fillPath!!, fillPaint!!)
@@ -252,7 +253,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
             canvas,
             "$0",
             stepStart.toFloat(),
-            -getValueHeight(startValueTemp).toFloat() + 30
+            -getValueHeight(startValueTemp).toFloat() + rulerValueDefault
         )
         drawRulerXValue(canvas)
     }

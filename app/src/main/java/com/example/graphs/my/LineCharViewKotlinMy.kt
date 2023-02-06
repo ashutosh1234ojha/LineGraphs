@@ -209,7 +209,7 @@ class LineCharViewKotlinMy @JvmOverloads constructor(
 
     private fun drawLinePointText(canvas: Canvas, text: String, x: Float, y: Float) {
         textPointPaint!!.textAlign = Paint.Align.CENTER
-        val newY = y - rulerValuePadding
+        val newY = y - rulerValuePadding*3
         drawText(canvas, textPointPaint, text, x, newY)
     }
 

@@ -1,11 +1,9 @@
 package com.example.graphs.line
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.graphics.alpha
 import java.util.*
 
 
@@ -54,15 +52,14 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private val rulerTextColor = tableColor
     private val rulerTextSizeSP = 10f
     private val pointTextColor = Color.parseColor("#000000")
+    private val filledColor = Color.parseColor("#BFD7ED")
     private val pointTextSizeSP = 10f
     private val isShowTable = true
-    private val isBezierLine = false // false = line and true=  curve
-    private var isCubePoint = false
     private var isInitialized = false
     private var isPlayAnim = false
-    lateinit var valueAnimator: ValueAnimator
+    private var isFilled = false
     private var currentValue = 0f
-    private var isAnimating = false
+    private var isPointTextVisible = false
     private var fillPaint: Paint? = null
     private var fillPath: Path? = null
 
@@ -71,47 +68,63 @@ class LineCharViewKotlin @JvmOverloads constructor(
     }
 
     private fun setupView() {
-        linePaint = Paint()
-        linePaint!!.isAntiAlias = true
-        linePaint!!.style = Paint.Style.STROKE
-        linePaint!!.color = lineColor
-        linePaint!!.strokeWidth = dip2px(lineWidthDP).toFloat()
-        pointPaint = Paint()
-        pointPaint!!.isAntiAlias = true
-        pointPaint!!.style = Paint.Style.FILL
-        pointPaint!!.color = pointColor
-        pointPaint!!.strokeWidth = dip2px(pointWidthDP).toFloat()
-        tablePaint = Paint()
-        tablePaint!!.isAntiAlias = true
-        tablePaint!!.style = Paint.Style.STROKE
-        tablePaint!!.color = tableColor
-        tablePaint!!.strokeWidth = dip2px(tableWidthDP).toFloat()
-        textRulerPaint = Paint()
-        textRulerPaint!!.isAntiAlias = true
-        textRulerPaint!!.style = Paint.Style.FILL
-        textRulerPaint!!.textAlign = Paint.Align.CENTER
-        textRulerPaint!!.color = rulerTextColor
-        textRulerPaint!!.textSize = sp2px(rulerTextSizeSP).toFloat()
-        textPointPaint = Paint()
-        textPointPaint!!.isAntiAlias = true
-        textPointPaint!!.style = Paint.Style.FILL
-        textPointPaint!!.textAlign = Paint.Align.CENTER
-        textPointPaint!!.color = pointTextColor
-        textPointPaint!!.textSize = sp2px(pointTextSizeSP).toFloat()
+        linePaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            color = lineColor
+            strokeWidth = dip2px(lineWidthDP).toFloat()
+        }
+
+        pointPaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.FILL
+            color = pointColor
+            strokeWidth = dip2px(pointWidthDP).toFloat()
+        }
+
+        tablePaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            color = tableColor
+            strokeWidth = dip2px(tableWidthDP).toFloat()
+        }
+
+        textRulerPaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.FILL
+            color = rulerTextColor
+            strokeWidth = dip2px(tableWidthDP).toFloat()
+            textAlign = Paint.Align.CENTER
+            textSize = sp2px(rulerTextSizeSP).toFloat()
+        }
+
+        textPointPaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.FILL
+            textAlign = Paint.Align.CENTER
+            color = pointTextColor
+            textSize = sp2px(pointTextSizeSP).toFloat()
+        }
+        fillPaint = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.FILL
+            color = filledColor
+        }
+
+
         mainPath = Path()
         linePath = Path()
         tablePath = Path()
-
-
-        fillPaint = Paint()
-        fillPaint!!.isAntiAlias = true
-        fillPaint!!.style = Paint.Style.FILL
-        fillPaint!!.color = Color.parseColor("#BFD7ED")  // desired fill color
         fillPath = Path()
+
         resetParam()
     }
 
-
+    /**
+     * stepStart= if isShowTable=true double the padding
+     * stepEnd== stepStart+ (total space between each element of x-axis)
+     * linePoints= here we created a empty Point list with null values
+     */
     private fun resetParam() {
         linePath!!.reset()
         tablePath!!.reset()
@@ -127,23 +140,31 @@ class LineCharViewKotlin @JvmOverloads constructor(
         isInitialized = false
     }
 
+    /**
+     * Add padding to width and height
+     */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = tablePadding + tableEnd + paddingLeft + paddingRight
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         var height = MeasureSpec.getSize(heightMeasureSpec)
         if (MeasureSpec.EXACTLY == heightMode) {
-            height = paddingTop + paddingBottom + height
+            height += paddingTop + paddingBottom
         }
         setMeasuredDimension(width, height)
     }
 
+    /**
+     * After onMeasure changes this method  is called as we have changed the width and height
+     */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mWidth = w
         mHeight = h
     }
 
-
+    /**
+     * Here we move our canvas from (0,0) to new position to center the graph and make calculation easy
+     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(Color.TRANSPARENT)
@@ -152,28 +173,28 @@ class LineCharViewKotlin @JvmOverloads constructor(
             mHeight / 2f + (viewDrawHeight + topSpace + bottomSpace) / 2f
         )
         if (!isInitialized) {
-            setupLine() //X- axis
+            setupLine()
         }
         if (isShowTable) {
             drawTable(canvas)
         }
         drawLine(canvas)
         drawLinePoints(canvas)
-        drawFill(canvas)
-    }
-    private fun drawFill(canvas: Canvas?) {
-//        fillPath!!.reset()
-//        fillPath?.addPath(linePath!!)
-//        canvas?.drawPath(fillPath!!, fillPaint!!)
 
-        val  offset = (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue)+rulerValueDefault).toFloat()
+        if (isFilled)
+            drawFill(canvas)
+    }
+
+    private fun drawFill(canvas: Canvas?) {
+        val offset =
+            (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue) + rulerValue).toFloat()
         fillPath!!.reset()
-        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(),offset)
+        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(), offset)
         linePoints?.forEach {
-            fillPath?.lineTo(it?.x!!.toFloat(),it?.y!!.toFloat())
+            fillPath?.lineTo(it?.x!!.toFloat(), it.y.toFloat())
 
         }
-        fillPath?.lineTo(linePoints!![linePoints!!.size-1]!!.x.toFloat(),offset)
+        fillPath?.lineTo(linePoints!![linePoints!!.size - 1]!!.x.toFloat(), offset)
 
 
         canvas?.drawPath(fillPath!!, fillPaint!!)
@@ -181,7 +202,9 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
     }
 
-
+    /**
+     * Draw text on canvas on the given coordinate
+     */
     private fun drawText(canvas: Canvas, textPaint: Paint?, text: String, x: Float, y: Float) {
         canvas.drawText(text, x, y, textPaint!!)
     }
@@ -210,29 +233,42 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
     private fun drawLinePointText(canvas: Canvas, text: String, x: Float, y: Float) {
         textPointPaint!!.textAlign = Paint.Align.CENTER
-        val newY = y - rulerValuePadding *3
+        val newY = y - rulerValuePadding * 3
         drawText(canvas, textPointPaint, text, x, newY)
     }
 
+    /**
+     * If isShowTable=true we have to add tablePadding in tableStart and tableEnd
+     */
     private val tableStart: Int
         private get() = if (isShowTable) stepStart + tablePadding else stepStart
     private val tableEnd: Int
         private get() = if (isShowTable) stepEnd + tablePadding else stepEnd
 
 
+    /**
+     * It draws the table of the graphs
+     */
     private fun drawTable(canvas: Canvas) {
         val tableEnd = tableEnd
         val rulerCount = maxValue / rulerValue
         val rulerMaxCount = if (maxValue % rulerValue > 0) rulerCount + 1 else rulerCount
-        val rulerMax = rulerValue * rulerMaxCount + rulerValueDefault
-        tablePath!!.moveTo(stepStart.toFloat(), -getValueHeight(rulerMax).toFloat())
-        tablePath!!.lineTo(stepStart.toFloat(), -20f)
-        tablePath!!.lineTo(tableEnd.toFloat(), -20f)
-        var startValue = rulerValueDefault - if (rulerValueDefault > 0) 0 else rulerValueDefault % rulerValue
+        val rulerMax = rulerValue * rulerMaxCount + rulerValue
+        tablePath!!.moveTo(
+            stepStart.toFloat(),
+            -getValueHeight(rulerMax).toFloat()
+        ) //Move to left top of graph
+        tablePath!!.lineTo(
+            stepStart.toFloat(),
+            -20f
+        ) // draw y-axis, here  y value can be adjusted  as per need
+        tablePath!!.lineTo(
+            tableEnd.toFloat(),
+            -20f
+        )// draw x-axis and here  y value can be adjusted  as per need
+        var startValue = rulerValue - if (rulerValue > 0) 0 else rulerValue % rulerValue
         var startValueTemp = minValue - if (minValue > 0) 0 else minValue % rulerValue
         val endValue = maxValue + rulerValue
-
-
 
         do {
             val startHeight = -getValueHeight(startValue)
@@ -249,6 +285,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         } while (startValue < endValue)
         canvas.drawPath(tablePath!!, tablePaint!!)
 
+        //This Y text will draw $0
         drawRulerYText(
             canvas,
             "$0",
@@ -258,14 +295,15 @@ class LineCharViewKotlin @JvmOverloads constructor(
         drawRulerXValue(canvas)
     }
 
-
+    /**
+     * Draw x-axis values
+     */
     private fun drawRulerXValue(canvas: Canvas) {
         if (linePoints == null) return
         for (i in linePoints!!.indices) {
             val point = linePoints!![i] ?: break
             val text1 = timeList[i];
             drawRulerXText(canvas, text1.value, linePoints!![i]!!.x.toFloat(), 0f)
-//            drawRulerXText(canvas, i.toString(), linePoints!![i]!!.x.toFloat(), 0f)
         }
     }
 
@@ -284,7 +322,9 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
     }
 
-
+    /**
+     * Draw points with value
+     */
     private fun drawLinePoints(canvas: Canvas) {
         if (linePoints == null) return
         val pointWidth = (dip2px(pointWidthDP) / 2).toFloat()
@@ -294,38 +334,46 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
         for (i in 0 until pointCount) {
             val point = linePoints!![i] ?: break
-            if (isCubePoint) {
-                canvas.drawPoint(point.x.toFloat(), point.y.toFloat(), pointPaint!!)
-            } else {
-                canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), pointWidth, pointPaint!!)
+            canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), pointWidth, pointPaint!!)
+            if(isPointTextVisible){
+                drawLinePointText(
+                    canvas,
+                    dataList[i].value.toString(),
+                    point.x.toFloat(),
+                    point.y.toFloat()
+                )
             }
 
-            drawLinePointText(
-                canvas,
-                dataList[i].value.toString(),
-                point.x.toFloat(),
-                point.y.toFloat()
-            )
         }
     }
 
 
+    /**
+     * valuePercent= percentage of height  taken by @value
+     * After this we apply this valuePercent to viewDrawHeight to get the position (y-axis) of the
+     * given @value
+     */
     private fun getValueHeight(value: Int): Int {
         val valuePercent =
             Math.abs(value - minValue) * 100f / (Math.abs(maxValue - minValue) * 100f)
         return (viewDrawHeight * valuePercent + bottomSpace + 0.5f).toInt()
     }
 
-
+    /**
+     * measuredHeight is the height of the view and heightPercent is a hit and trail value to get
+     * the height of the view
+     */
     private val viewDrawHeight: Float
         private get() = measuredHeight * heightPercent
 
-
+    /**
+     *  pre= it contains the cordinates of the 0th index
+     *  after this we set all the value from 1st index till last to linePoints array
+     */
     private fun setupLine() {
         if (dataList.isEmpty()) return
         var stepTemp = tableStart
-        var pre = Point()
-        pre[stepTemp] = -getValueHeight(dataList[0].value)
+        var pre = Point(stepTemp, -getValueHeight(dataList[0].value))
         linePoints!![0] = pre
         linePath!!.moveTo(pre.x.toFloat(), pre.y.toFloat())
         if (dataList.size == 1) {
@@ -334,36 +382,25 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
         for (i in 1 until dataList.size) {
             val data = dataList[i]
-            val next = Point()
-            next[stepSpace.let { stepTemp += it; stepTemp }] = -getValueHeight(data.value)
-            if (isBezierLine) {
-                val cW = pre.x + stepSpace / 2
-                val p1 = Point()
-                p1[cW] = pre.y
-                val p2 = Point()
-                p2[cW] = next.y
-                linePath!!.cubicTo(
-                    p1.x.toFloat(),
-                    p1.y.toFloat(),
-                    p2.x.toFloat(),
-                    p2.y.toFloat(),
-                    next.x.toFloat(),
-                    next.y.toFloat()
-                )
-            } else {
-                linePath!!.lineTo(next.x.toFloat(), next.y.toFloat())
-            }
-            pre = next
+            val next =
+                Point(stepSpace.let { stepTemp += it; stepTemp }, -getValueHeight(data.value))
+            linePath!!.lineTo(next.x.toFloat(), next.y.toFloat())
             linePoints!![i] = next
         }
         isInitialized = true
     }
 
+    /**
+     * Converts dp value to px
+     */
     private fun dip2px(dipValue: Float): Int {
         val scale = resources.displayMetrics.density
         return (dipValue * scale + 0.5f).toInt()
     }
 
+    /**
+     * Converts sp value to px
+     */
     private fun sp2px(spValue: Float): Int {
         val fontScale = resources.displayMetrics.scaledDensity
         return (spValue * fontScale + 0.5f).toInt()
@@ -375,7 +412,10 @@ class LineCharViewKotlin @JvmOverloads constructor(
         postInvalidate()
     }
 
-
+    /**
+     * This method is called to set x and  y-axis data
+     * Here maxValue and minValue of y-axis  data is calculated to get the top and bottom most values of the  graph
+     */
     fun setData(dataList: List<Data>?, timeList: List<Time>?) {
         if (dataList == null || timeList == null) {
             throw RuntimeException("dataList cannot is null!")
@@ -394,37 +434,43 @@ class LineCharViewKotlin @JvmOverloads constructor(
         ) { o1, o2 -> o1.value - o2.value }.value
         refreshLayout()
     }
-    private var minChartValue = 0
-    private var chartPath: Path? = null
 
+    /**
+     * Is area below line curve  filled
+     */
+    fun setIsFilled(isFilled: Boolean) {
+        this.isFilled = isFilled
+        refreshLayout()
+    }
 
+    /**
+     * Space between each line of Y-axis
+     */
+    fun setRulerYSpace(space: Int) {
+        rulerValue = space
+        refreshLayout()
+    }
 
+    /**
+     * Space between each element of X-axis
+     */
+    fun setStepSpace(dp: Int) {
+        stepSpaceDP = dp
+        refreshLayout()
+    }
 
-//    fun setCubePoint(isCube: Boolean) {
-//        isCubePoint = isCube
-//        refreshLayout()
-//    }
+    fun setPointTextVisibility(isPointTextVisible: Boolean) {
+        this.isPointTextVisible = isPointTextVisible
+        refreshLayout()
+    }
 
-
-//    fun setRulerYSpace(space: Int) {
-//        var space = space
-//        if (space <= 0) {
-//            space = rulerValueDefault
-//        }
-//        rulerValue = space
-//        refreshLayout()
-//    }
-//
-//
-//    fun setStepSpace(dp: Int) {
-//        var dp = dp
-//        if (dp < stepSpaceDefault) {
-//            dp = stepSpaceDefault
-//        }
-//        stepSpaceDP = dp
-//        refreshLayout()
-//    }
-
+    /**
+     * Y-axis  data
+     */
     class Data(var value: Int)
+
+    /**
+     * X-axis  data
+     */
     class Time(var value: String)
 }

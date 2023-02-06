@@ -55,6 +55,10 @@ class MainLineOneActivityKotlin : AppCompatActivity() {
             times.add(data)
         }
         lineChartView!!.setData(datas, times)
+        lineChartView!!.setIsFilled(true)
+        lineChartView!!.setRulerYSpace(30)
+        lineChartView!!.setStepSpace(50)
+        lineChartView!!.setPointTextVisibility(true)
         sb_ruler_space!!.max = 70
         sb_ruler_space!!.progress = 20
         if (lineChartView != null) {

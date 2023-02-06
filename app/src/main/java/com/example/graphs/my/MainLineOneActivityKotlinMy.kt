@@ -10,19 +10,10 @@ import com.example.graphs.R
 
 class MainLineOneActivityKotlinMy : AppCompatActivity() {
 
-    var tv_ruler_y: TextView? = null
-    var sb_ruler_space: SeekBar? = null
-
-    var tv_step_space: TextView? = null
-    var sb_step_space: SeekBar? = null
-
 
     var lineChartView: LineCharViewKotlinMy? = null
 
-    //    private val dataArr = intArrayOf(
-//        200, 100, 300, -20, 50, -80, 200, 100, 300, 50, 200, 150, 160, 100, 300, 50, 200, 150,
-//        300, 50, 200, 100, 150, 150
-//    )
+
     private val dataArr = intArrayOf(
         200, 100, 300, 20, 50, 80, 200, 100, 300, 50, 200, 150, 160, 100, 300, 50, 200, 150,
         300, 50, 200, 100, 150, 150
@@ -38,10 +29,6 @@ class MainLineOneActivityKotlinMy : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_line_one_my)
         lineChartView = findViewById<View>(R.id.line_chart_view) as LineCharViewKotlinMy
-        sb_ruler_space = findViewById<View>(R.id.sb_ruler_space) as SeekBar
-        tv_ruler_y = findViewById<View>(R.id.tv_ruler_y) as TextView
-        sb_step_space = findViewById<View>(R.id.sb_step_space) as SeekBar
-        tv_step_space = findViewById<View>(R.id.tv_step_space) as TextView
         val datas: MutableList<LineCharViewKotlinMy.Data> = ArrayList()
         val times: MutableList<LineCharViewKotlinMy.Time> = ArrayList()
         for (value in dataArr) {
@@ -53,11 +40,11 @@ class MainLineOneActivityKotlinMy : AppCompatActivity() {
             times.add(data)
         }
         lineChartView!!.setData(datas, times)
+        lineChartView!!.setIsFilled(true)
+        lineChartView!!.setRulerYSpace(30)
+        lineChartView!!.setStepSpace(50)
+        lineChartView!!.setPointTextVisibility(true)
 
-        if (lineChartView != null) {
-            ///  lineChartView!!.setRulerYSpace(20)
-            tv_ruler_y!!.text = 20.toString()
-        }
 
     }
 

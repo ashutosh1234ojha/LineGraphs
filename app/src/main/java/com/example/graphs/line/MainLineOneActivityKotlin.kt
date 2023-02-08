@@ -23,7 +23,7 @@ class MainLineOneActivityKotlin : AppCompatActivity() {
 //        200, 100, 300, -20, 50, -80, 200, 100, 300, 50, 200, 150, 160, 100, 300, 50, 200, 150,
 //        300, 50, 200, 100, 150, 150
 //    )
-    private val dataArr = intArrayOf(30,
+    private val dataArr = intArrayOf(0,
         200, 100, 300, 20, 50, 80, 200, 100, 300, 50, 200, 150, 160, 100, 300, 50, 200, 150,
         300, 50, 200, 100, 150, 150
     )

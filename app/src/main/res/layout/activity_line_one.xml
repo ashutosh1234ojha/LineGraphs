@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
 
+    >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
         <HorizontalScrollView
+            android:id="@+id/hsv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:overScrollMode="never"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            app:layout_constraintBottom_toTopOf="@+id/guid"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -30,109 +30,28 @@
                 <com.example.graphs.line.LineCharViewKotlin
                     android:id="@+id/line_chart_view"
                     android:layout_width="wrap_content"
-                    android:layout_height="300dp"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </HorizontalScrollView>
-        </ScrollView>
 
-        <LinearLayout
+        <View
+            android:id="@+id/guid"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/black"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent=".5" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_constraintTop_toBottomOf="@+id/guid" />
 
-<!--            <Button-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:onClick="doAnimation"-->
-<!--                android:text="animation"/>-->
-
-<!--            <Button-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:onClick="bezierModelToggle"-->
-<!--                android:text="bezier Toggle"/>-->
-
-<!--            <Button-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:onClick="pointModelToggle"-->
-<!--                android:text="point Toggle"/>-->
-
-<!--            <Button-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:onClick="tableToggle"-->
-<!--                android:text="table Toggle"/>-->
-
-        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingLeft="@dimen/activity_horizontal_margin">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grid Lines Y："/>
-
-            <TextView
-                android:id="@+id/tv_ruler_y"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20"/>
-
-
-        </LinearLayout>
-
-
-        <SeekBar
-            android:id="@+id/sb_ruler_space"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="40dp"/>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:paddingLeft="@dimen/activity_horizontal_margin">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grid Line X："/>
-
-            <TextView
-                android:id="@+id/tv_step_space"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15"/>
-
-
-        </LinearLayout>
-
-
-        <SeekBar
-            android:id="@+id/sb_step_space"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="40dp"/>
-
-    </LinearLayout>
-
-
-</FrameLayout>
+</ScrollView>

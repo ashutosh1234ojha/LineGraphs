@@ -3,6 +3,7 @@ package com.example.graphs.experiment
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import kotlin.math.max
 import kotlin.math.min
@@ -16,6 +17,12 @@ class LineChart @JvmOverloads constructor(
     private var minValue = 0f
     private var maxValue = 0f
     val padding = 100
+    private var tablePadding = 20
+    private val tablePaddingDP = 20
+
+    private val pointWidthDefault = 8f
+    private var pointWidthDP = pointWidthDefault
+    private val pointColor = Color.parseColor("#000080")
 
 
     private val paint = Paint().apply {
@@ -23,6 +30,13 @@ class LineChart @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = 4f
         isAntiAlias = true
+    }
+
+    val pointPaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL
+        color = pointColor
+        strokeWidth = dip2px(pointWidthDP).toFloat()
     }
 
     private val gridPaint = Paint().apply {
@@ -86,50 +100,79 @@ class LineChart @JvmOverloads constructor(
                 canvas?.drawText(
                     i.toString(),
                     0f,
-                    height - intervalY * (i - minValue) + padding,
+                    height - intervalY * (i - minValue) + padding + 5,
                     axisTextPaint
                 )
             }
+            val pointWidth = (dip2px(pointWidthDP) / 2).toFloat()
 
             var startX = padding.toFloat()
-            var startY = height - (data[0] - minValue) * intervalY + padding
+            var startY = height - (data[0] - minValue) * intervalY + padding + 5
             for (i in 1 until data.size) {
                 val stopX = startX + intervalX
-                val stopY = height - (data[i] - minValue) * intervalY + padding
+                val stopY = height - (data[i] - minValue) * intervalY + padding + 5
                 canvas?.drawLine(startX, startY, stopX, stopY, paint)
+                canvas?.drawCircle(startX, startY, pointWidth, pointPaint)
+
                 startX = stopX
                 startY = stopY
             }
+            canvas?.drawCircle(startX, startY, pointWidth, pointPaint) //for last point
+
         }
 
         linnes(canvas)
     }
 
+    private fun dip2px(dipValue: Float): Int {
+        val scale = resources.displayMetrics.density
+        return (dipValue * scale + 0.5f).toInt()
+    }
+
     private fun linnes(canvas: Canvas?) {
         val xUnit = width / (time.size - 1)
-        val yUnit = height / 300
-        for (i in 0..time.size) {
-            val x = i * xUnit.toFloat()
-            canvas!!.drawLine(x, 0f, x.toFloat(), height.toFloat(), gridPaint)
-        }
+        val yUnit = height / maxValue.toInt()
+//        for (i in 0..time.size) {
+//            val x = i * xUnit.toFloat()
+//            canvas!!.drawLine(x, 0f, x.toFloat(), height.toFloat(), gridPaint)
+//        }
 
-        for (i in 0..300 step 50) {
+        for (i in 0..maxValue.toInt() step 50) {
             val y = height - i * yUnit.toFloat()
-            canvas!!.drawLine(0f, y, width.toFloat(), y, gridPaint)
+            Log.d("Tag", "Y " + y)
+            //   if(i!=1){
+            canvas!!.drawLine(100f, y, width.toFloat(), y, gridPaint)
+
         }
+//        }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val xUnit = width / (time.size - 1)
+
+        val stepEnd = 2000 + xUnit * (time.size - 1)
+        val width = tablePadding + stepEnd + paddingLeft + paddingRight
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        var height = MeasureSpec.getSize(heightMeasureSpec)
+//        if (MeasureSpec.EXACTLY == heightMode) {
+//            height += paddingTop + paddingBottom
+//        }
+        setMeasuredDimension(width, height)
     }
 
 
-
     fun setData() {
-        data = arrayOf(0,
-            200, 100, 300, 20, 50,
+        data = arrayOf(
+            0,
+            200, 100, 300, 20, 50, 200, 100, 300, 20, 50, 500
         )
 
-       time = arrayOf("31 Dec",
-            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan",
+        time = arrayOf(
+            "31 Dec",
+            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan", "31 Dec",
+            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan", "6 Jan"
         )
         minValue = 0f
-        maxValue = 300f
+        maxValue = 700f
     }
 }

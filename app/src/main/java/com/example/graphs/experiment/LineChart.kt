@@ -15,12 +15,20 @@ class LineChart @JvmOverloads constructor(
     private var time = arrayOf<String>()
     private var minValue = 0f
     private var maxValue = 0f
+    val padding = 100
+
 
     private val paint = Paint().apply {
         color = Color.BLACK
         style = Paint.Style.STROKE
         strokeWidth = 4f
         isAntiAlias = true
+    }
+
+    private val gridPaint = Paint().apply {
+        color = Color.GRAY
+        style = Paint.Style.STROKE
+        strokeWidth = 1f
     }
 
     init {
@@ -45,7 +53,6 @@ class LineChart @JvmOverloads constructor(
         super.onDraw(canvas)
 
         if (data.isNotEmpty() && time.isNotEmpty()) {
-            val padding = 100
             val width = width - padding * 2
             val height = height - padding * 2
             val intervalX = width.toFloat() / (time.size - 1)
@@ -94,7 +101,25 @@ class LineChart @JvmOverloads constructor(
                 startY = stopY
             }
         }
+
+        linnes(canvas)
     }
+
+    private fun linnes(canvas: Canvas?) {
+        val xUnit = width / (time.size - 1)
+        val yUnit = height / 300
+        for (i in 0..time.size) {
+            val x = i * xUnit.toFloat()
+            canvas!!.drawLine(x, 0f, x.toFloat(), height.toFloat(), gridPaint)
+        }
+
+        for (i in 0..300 step 50) {
+            val y = height - i * yUnit.toFloat()
+            canvas!!.drawLine(0f, y, width.toFloat(), y, gridPaint)
+        }
+    }
+
+
 
     fun setData() {
         data = arrayOf(0,

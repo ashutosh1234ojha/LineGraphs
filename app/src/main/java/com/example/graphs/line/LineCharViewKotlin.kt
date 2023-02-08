@@ -258,13 +258,15 @@ class LineCharViewKotlin @JvmOverloads constructor(
             stepStart.toFloat(),
             -getValueHeight(rulerMax).toFloat()
         ) //Move to left top of graph
+
+        val aa = rulerValue.toFloat()
         tablePath!!.lineTo(
             stepStart.toFloat(),
-            -20f
+            aa
         ) // draw y-axis, here  y value can be adjusted  as per need
         tablePath!!.lineTo(
             tableEnd.toFloat(),
-            -20f
+            aa
         )// draw x-axis and here  y value can be adjusted  as per need
         var startValue = rulerValue - if (rulerValue > 0) 0 else rulerValue % rulerValue
         var startValueTemp = minValue - if (minValue > 0) 0 else minValue % rulerValue
@@ -335,7 +337,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         for (i in 0 until pointCount) {
             val point = linePoints!![i] ?: break
             canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), pointWidth, pointPaint!!)
-            if(isPointTextVisible){
+            if (isPointTextVisible) {
                 drawLinePointText(
                     canvas,
                     dataList[i].value.toString(),

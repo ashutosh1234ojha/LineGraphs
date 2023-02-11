@@ -45,4 +45,7 @@ dependencies {
 //    api 'com.jjoe64:graphview:4.2.2'
       //  exclude group: 'com.android.support', module: 'support-compat'
 
+    implementation "androidx.security:security-crypto:1.0.0"
+
+
 }

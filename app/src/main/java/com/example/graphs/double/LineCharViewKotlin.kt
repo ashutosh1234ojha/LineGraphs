@@ -3,9 +3,8 @@ package com.example.graphs.double
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
-import java.util.*
-import kotlin.collections.ArrayList
 import java.util.*
 
 
@@ -25,11 +24,8 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var tablePath: Path? = null
     private var mWidth = 0
     private var mHeight = 0
-    private var dataList: MutableMap<String, MutableList<Int>> =
-        mutableMapOf<String, MutableList<Int>>()
 
-    //    private val timeList: MutableList<Time> = ArrayList()
-    private var linePoints: ArrayList<kotlin.collections.ArrayList<Point>>? = null
+    private var linePoints: Array<Point?>? = null
     private var stepStart = 0
     private var stepEnd = 0
     private var stepSpace = 0
@@ -66,6 +62,10 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var isPointTextVisible = false
     private var fillPaint: Paint? = null
     private var fillPath: Path? = null
+
+    private val dataList = mutableMapOf<String, MutableList<Int>>()
+    val timeList: MutableList<Time> = ArrayList()
+    val dataList1: MutableList<Data> = ArrayList()
 
     init {
         setupView()
@@ -121,6 +121,35 @@ class LineCharViewKotlin @JvmOverloads constructor(
         tablePath = Path()
         fillPath = Path()
 
+         val dataArr = intArrayOf(
+            200, 200, 100, 20, 50, 80, 200
+        )
+
+         val timeArr = arrayOf(
+            "1 Jan", "1 Jan", "1 Jan", "3 Jan", "4 Jan","5 Jan", "6 Jan"
+        )
+         val timeArrUnique = arrayOf(
+             "1 Jan", "3 Jan", "4 Jan","5 Jan", "6 Jan"        )
+
+        val datas: MutableList<LineCharViewKotlin.Data> = ArrayList()
+        val times: MutableList<LineCharViewKotlin.Time> = ArrayList()
+        val timesUnique: MutableList<LineCharViewKotlin.Time> = ArrayList()
+        for (value in dataArr) {
+            val data = LineCharViewKotlin.Data(value)
+            datas.add(data)
+        }
+        for (value in timeArr) {
+            val data = LineCharViewKotlin.Time(value)
+            times.add(data)
+        }
+
+        for (value in timeArrUnique) {
+            val data = LineCharViewKotlin.Time(value)
+            timesUnique.add(data)
+        }
+       setData(datas, times,timesUnique)
+
+
         resetParam()
     }
 
@@ -140,22 +169,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         stepEnd = stepStart + stepSpace * (dataList.size - 1)
         bottomSpace = tablePadding
         topSpace = bottomSpace
-
-        val arrayOut = ArrayList<ArrayList<Point>>(dataList.size)
-
-
-        var i = 0;
-        for ((key, value) in dataList) {
-
-            arrayOut[i] = ArrayList<Point>(value.size)
-            i++;
-
-        }
-
-
-
-
-        linePoints = arrayOut
+        linePoints = arrayOfNulls(dataList1.size)  //Total values
         isInitialized = false
     }
 
@@ -198,13 +212,14 @@ class LineCharViewKotlin @JvmOverloads constructor(
             drawTable(canvas)
         }
         drawLine(canvas)
+
         drawLinePoints(canvas)
 
-        if (isFilled)
-            drawFill(canvas)
+//        if (isFilled)
+//            drawFill(canvas)
     }
 
-    private fun drawFill(canvas: Canvas?) {
+//    private fun drawFill(canvas: Canvas?) {
 //        val offset =
 //            (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue) + rulerValue).toFloat()
 //        fillPath!!.reset()
@@ -218,8 +233,8 @@ class LineCharViewKotlin @JvmOverloads constructor(
 //
 //        canvas?.drawPath(fillPath!!, fillPaint!!)
 //
-
-    }
+//
+//    }
 
     /**
      * Draw text on canvas on the given coordinate
@@ -277,8 +292,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
             stepStart.toFloat(),
             -getValueHeight(rulerMax).toFloat()
         ) //Move to left top of graph
-
-        //    val aa = rulerValue.toFloat()
         tablePath!!.lineTo(
             stepStart.toFloat(),
             -20f
@@ -320,13 +333,12 @@ class LineCharViewKotlin @JvmOverloads constructor(
      * Draw x-axis values
      */
     private fun drawRulerXValue(canvas: Canvas) {
-//        if (linePoints == null) return
-//        for (i in dataList!!.indices) {
-//            val point = dataList!![i] ?: break
-//            val text1 = point.time
-//
-//            //drawRulerXText(canvas, text1, linePoints!![i]!!.x.toFloat(), 0f)
-//        }
+        if (linePoints == null) return
+        for (i in linePoints!!.indices) {
+            val point = linePoints!![i] ?: break
+         //   val text1 = timeList[i];
+            drawRulerXText(canvas, "time", linePoints!![i]!!.x.toFloat(), 0f)
+        }
     }
 
 
@@ -356,18 +368,15 @@ class LineCharViewKotlin @JvmOverloads constructor(
         }
         for (i in 0 until pointCount) {
             val point = linePoints!![i] ?: break
-            point.forEach {
-                canvas.drawCircle(it.x.toFloat(), it.y.toFloat(), pointWidth, pointPaint!!)
-                if (isPointTextVisible) {
-                    drawLinePointText(
-                        canvas,
-                        "",
-                        it.x.toFloat(),
-                        it.y.toFloat()
-                    )
-                }
+            canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), pointWidth, pointPaint!!)
+            if (isPointTextVisible) {
+                drawLinePointText(
+                    canvas,
+                    dataList1[i].value.toString(),
+                    point.x.toFloat(),
+                    point.y.toFloat()
+                )
             }
-
 
         }
     }
@@ -398,61 +407,53 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private fun setupLine() {
         if (dataList.isEmpty()) return
         var stepTemp = tableStart
-        var pre: ArrayList<Point>? = null
-        dataList.forEach { key, value ->
-            run {
-                pre = java.util.ArrayList<Point>()
-                value.forEach {
-                    var point = Point(stepTemp, -getValueHeight(it))
-                    pre?.add(point)
-                }
-                linePoints!![0] = pre!!
+        val list = dataList.get(key = timeList[0].value)
+//        var pre = Point(stepTemp, -getValueHeight(list!![0]))
+//        linePoints!![0] = pre
+//        linePath!!.moveTo(pre.x.toFloat(), pre.y.toFloat())
+        var i = 0
+        var count=1;
+        list!!.forEach {
+            Log.d("CounntCounnt",count.toString())
+
+            var pre = Point(stepTemp, -getValueHeight(it))
+            linePoints!![i] = pre
+            if(i==0){
+                linePath!!.moveTo(pre.x.toFloat(), pre.y.toFloat())
+
+            }else{
+                linePath!!.lineTo(pre.x.toFloat(), pre.y.toFloat())
 
             }
+            i++
+            count++;
+        }
 
-        }
-        pre?.forEach {
-            linePath!!.moveTo(it.x.toFloat(), it.y.toFloat())
-        }
-        if (dataList.size == 1) {
+        if (timeList.size == 1) {
             isInitialized = true
             return
         }
-        var i = 0;
-        dataList.forEach { key, value ->
-            kotlin.run {
-                var nextPoints = java.util.ArrayList<Point>()
+        var c=1;
+        var c1=1;
+        for (j in 1 until timeList.size) {
+            //  val data = dataList[i]
+            val list1 = dataList.get(key = timeList[j].value)
+            Log.d("List",list1!!.size.toString())
+         stepTemp=   stepSpace.let { stepTemp += it; stepTemp }
+            list1!!.forEach {
+                Log.d("Counnt",c.toString())
 
-                if (i != 0) {
-                    value.forEach {
-                        val next =
-                            Point(stepSpace.let { stepTemp += it; stepTemp }, -getValueHeight(it))
-                        nextPoints.add(next)
-                    }
-                    linePoints!![i] = nextPoints
-                }
-                i++;
+                Log.d("CounntCounnt",count.toString())
 
-
+                val next =
+                    Point(stepTemp, -getValueHeight(it))
+                linePath!!.lineTo(next.x.toFloat(), next.y.toFloat())
+                linePoints!![i] = next
+                i++
+                count++;
+                c++;
             }
-
         }
-//        for (i in 1 until dataList.size) {
-//            val data = dataList[i]
-//            var nextPoints = java.util.ArrayList<Point>()
-//            data.data.forEach {
-//                val next =
-//                    Point(stepSpace.let { stepTemp += it; stepTemp }, -getValueHeight(it))
-//                nextPoints.add(next)
-//            }
-//
-//            nextPoints.forEach {
-//                linePath!!.lineTo(it.x.toFloat(), it.y.toFloat())
-//
-//            }
-//
-//            linePoints!![i] = nextPoints
-//        }
         isInitialized = true
     }
 
@@ -482,55 +483,49 @@ class LineCharViewKotlin @JvmOverloads constructor(
      * This method is called to set x and  y-axis data
      * Here maxValue and minValue of y-axis  data is calculated to get the top and bottom most values of the  graph
      */
-    fun setData(dataList1: MutableMap<String, MutableList<Int>>) {
 
-        val array: MutableList<Int> = ArrayList()
-        array.add(200)
-        array.add(100)
 
-        val array1: MutableList<Int> = ArrayList()
-        array1.add(300)
 
-        val array2: MutableList<Int> = ArrayList()
-        array2.add(80)
-
-        val array3: MutableList<Int> = ArrayList()
-        array3.add(150)
-
-        val array4: MutableList<Int> = ArrayList()
-        array4.add(160)
-
-        if (dataList1 == null) {
+    fun setData(
+        dataList1: MutableList<Data>?,
+        timeList1: MutableList<Time>?,
+        timeListUnique: MutableList<Time>?
+    ) {
+//         val dataList: MutableList<Data> = ArrayList()
+//         val timeList: MutableList<Time> = ArrayList()
+        if (timeListUnique == null || dataList1 == null) {
             throw RuntimeException("dataList cannot is null!")
         }
-        if (dataList1.isEmpty()) return
-        //    if (timeList.isEmpty()) return
-        this.dataList.clear()
-
-        this.dataList = dataList1
-
-//        this.dataList.add(0, MainData("1 Jan", array))
-//        this.dataList.add(1, MainData("2 Jan", array1))
-//        this.dataList.add(2, MainData("3 Jan", array2))
-//        this.dataList.add(3, MainData("4 Jan", array3))
-//        this.dataList.add(4, MainData("5 Jan", array4))//        this.timeList.clear()
-//        for ((key, value) in dataList1) {
-//        //    println("$key = $value")
-//            val list = kotlin.collections.ArrayList<Int>();
-//            this.dataList.add(MainData(key, value))
-//
-//        }
-
-
-//        this.timeList.addAll(timeList)
+//        if (dataList.isEmpty()) return
+        if (timeListUnique.isEmpty()) return
+//        this.dataList.clear()
+        this.timeList.clear()
+        this.dataList1.clear()
+//        this.dataList.addAll(dataList)
+        this.timeList.addAll(timeListUnique)
+        this.dataList1.addAll(dataList1)
 //        maxValue = Collections.max(
 //            this.dataList
 //        ) { o1, o2 -> o1.value - o2.value }.value
 //        minValue = Collections.min(
 //            this.dataList
 //        ) { o1, o2 -> o1.value - o2.value }.value
-        maxValue = 300
-        minValue = 80
+//        refreshLayout()
+
+        for (i in timeList1!!.indices) {
+            if (dataList.containsKey(timeList1[i].value)) {
+                dataList[timeList1[i].value!!]!!.add(dataList1[i]!!.value)
+            } else {
+                dataList[timeList1[i].value] = mutableListOf(dataList1[i].value)
+            }
+        }
+
+        maxValue = Collections.max(
+            dataList1
+        ) { o1, o2 -> o1.value - o2.value }.value
+        minValue = Collections.min(
+            dataList1
+        ) { o1, o2 -> o1.value - o2.value }.value
         refreshLayout()
     }
 
@@ -572,6 +567,4 @@ class LineCharViewKotlin @JvmOverloads constructor(
      * X-axis  data
      */
     class Time(var value: String)
-
-    data class MainData(val time: String, val data: MutableList<Int>)
 }

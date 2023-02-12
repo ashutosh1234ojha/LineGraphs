@@ -12,7 +12,7 @@
         android:theme="@style/Theme.Graphs"
         tools:targetApi="31" >
         <activity
-            android:name=".db.EncryptedSharedPf"
+            android:name=".double.MainLineOneActivityKotlin"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

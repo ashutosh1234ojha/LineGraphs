@@ -121,15 +121,16 @@ class LineCharViewKotlin @JvmOverloads constructor(
         tablePath = Path()
         fillPath = Path()
 
-         val dataArr = intArrayOf(
-            200, 200, 100, 20, 50, 80, 200
+        val dataArr = intArrayOf(
+            200, 200, 100, 20, 50, 80, 200,400,500,500,40,30,30
         )
 
-         val timeArr = arrayOf(
-            "1 Jan", "1 Jan", "1 Jan", "3 Jan", "4 Jan","5 Jan", "6 Jan"
+        val timeArr = arrayOf(
+            "1 Jan", "1 Jan", "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "6 Jan","7 Jan","8 Jan","9 Jan","9 Jan"
         )
-         val timeArrUnique = arrayOf(
-             "1 Jan", "3 Jan", "4 Jan","5 Jan", "6 Jan"        )
+        val timeArrUnique = arrayOf(
+            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "7 Jan","8 Jan","9 Jan"
+        )
 
         val datas: MutableList<LineCharViewKotlin.Data> = ArrayList()
         val times: MutableList<LineCharViewKotlin.Time> = ArrayList()
@@ -147,7 +148,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
             val data = LineCharViewKotlin.Time(value)
             timesUnique.add(data)
         }
-       setData(datas, times,timesUnique)
+        setData(datas, times, timesUnique)
 
 
         resetParam()
@@ -215,26 +216,26 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
         drawLinePoints(canvas)
 
-//        if (isFilled)
-//            drawFill(canvas)
+        if (isFilled)
+            drawFill(canvas)
     }
 
-//    private fun drawFill(canvas: Canvas?) {
-//        val offset =
-//            (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue) + rulerValue).toFloat()
-//        fillPath!!.reset()
-//        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(), offset)
-//        linePoints?.forEach {
-//            fillPath?.lineTo(it?.x!!.toFloat(), it.y.toFloat())
-//
-//        }
-//        fillPath?.lineTo(linePoints!![linePoints!!.size - 1]!!.x.toFloat(), offset)
-//
-//
-//        canvas?.drawPath(fillPath!!, fillPaint!!)
-//
-//
-//    }
+    private fun drawFill(canvas: Canvas?) {
+        val offset =
+            (-getValueHeight(minValue - if (minValue > 0) 0 else minValue % rulerValue) + rulerValue).toFloat()
+        fillPath!!.reset()
+        fillPath?.moveTo(linePoints!![0]!!.x.toFloat(), offset)
+        linePoints?.forEach {
+            fillPath?.lineTo(it?.x!!.toFloat(), it.y.toFloat())
+
+        }
+        fillPath?.lineTo(linePoints!![linePoints!!.size - 1]!!.x.toFloat(), offset)
+
+
+        canvas?.drawPath(fillPath!!, fillPaint!!)
+
+
+    }
 
     /**
      * Draw text on canvas on the given coordinate
@@ -334,10 +335,17 @@ class LineCharViewKotlin @JvmOverloads constructor(
      */
     private fun drawRulerXValue(canvas: Canvas) {
         if (linePoints == null) return
+        var j = 0;
+        var lastX = 0f
+        var lastXText = ""
         for (i in linePoints!!.indices) {
             val point = linePoints!![i] ?: break
-         //   val text1 = timeList[i];
-            drawRulerXText(canvas, "time", linePoints!![i]!!.x.toFloat(), 0f)
+            if (lastX != linePoints!![i]!!.x.toFloat()) {
+                lastXText = timeList[j].value
+                j++;
+            }
+            lastX = linePoints!![i]!!.x.toFloat()
+            drawRulerXText(canvas, lastXText, linePoints!![i]!!.x.toFloat(), 0f)
         }
     }
 
@@ -412,16 +420,16 @@ class LineCharViewKotlin @JvmOverloads constructor(
 //        linePoints!![0] = pre
 //        linePath!!.moveTo(pre.x.toFloat(), pre.y.toFloat())
         var i = 0
-        var count=1;
+        var count = 1;
         list!!.forEach {
-            Log.d("CounntCounnt",count.toString())
+            Log.d("CounntCounnt", count.toString())
 
             var pre = Point(stepTemp, -getValueHeight(it))
             linePoints!![i] = pre
-            if(i==0){
+            if (i == 0) {
                 linePath!!.moveTo(pre.x.toFloat(), pre.y.toFloat())
 
-            }else{
+            } else {
                 linePath!!.lineTo(pre.x.toFloat(), pre.y.toFloat())
 
             }
@@ -433,17 +441,17 @@ class LineCharViewKotlin @JvmOverloads constructor(
             isInitialized = true
             return
         }
-        var c=1;
-        var c1=1;
+        var c = 1;
+        var c1 = 1;
         for (j in 1 until timeList.size) {
             //  val data = dataList[i]
             val list1 = dataList.get(key = timeList[j].value)
-            Log.d("List",list1!!.size.toString())
-         stepTemp=   stepSpace.let { stepTemp += it; stepTemp }
+            Log.d("List", list1!!.size.toString())
+            stepTemp = stepSpace.let { stepTemp += it; stepTemp }
             list1!!.forEach {
-                Log.d("Counnt",c.toString())
+                Log.d("Counnt", c.toString())
 
-                Log.d("CounntCounnt",count.toString())
+                Log.d("CounntCounnt", count.toString())
 
                 val next =
                     Point(stepTemp, -getValueHeight(it))
@@ -483,7 +491,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
      * This method is called to set x and  y-axis data
      * Here maxValue and minValue of y-axis  data is calculated to get the top and bottom most values of the  graph
      */
-
 
 
     fun setData(

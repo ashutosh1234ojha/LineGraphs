@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import java.util.*
 
@@ -62,10 +63,14 @@ class LineCharViewKotlin @JvmOverloads constructor(
     private var isPointTextVisible = false
     private var fillPaint: Paint? = null
     private var fillPath: Path? = null
+    private var linePointsText: Point? = null
+    lateinit var canvas: Canvas
+
 
     private val dataList = mutableMapOf<String, MutableList<Int>>()
     val timeList: MutableList<Time> = ArrayList()
     val dataList1: MutableList<Data> = ArrayList()
+    val dataPointList = mutableMapOf<String, DrawPoint>()
 
     init {
         setupView()
@@ -121,15 +126,45 @@ class LineCharViewKotlin @JvmOverloads constructor(
         tablePath = Path()
         fillPath = Path()
 
+//        val dataArr = intArrayOf(
+//            200, 200, 100, 20, 50, 80, 200, 400, 500, 500, 40, 30, 30
+//        )
+//
+//        val timeArr = arrayOf(
+//            "1 Jan",
+//            "1 Jan",
+//            "1 Jan",
+//            "2 Jan",
+//            "3 Jan",
+//            "4 Jan",
+//            "5 Jan",
+//            "6 Jan",
+//            "6 Jan",
+//            "7 Jan",
+//            "8 Jan",
+//            "9 Jan",
+//            "9 Jan"
+//        )
+//        val timeArrUnique = arrayOf(
+//            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan", "6 Jan", "7 Jan", "8 Jan", "9 Jan"
+//        )
         val dataArr = intArrayOf(
-            200, 200, 100, 20, 50, 80, 200,400,500,500,40,30,30
+            50, 100, 150, 200, 250, 300, 350, 400, 450
         )
 
         val timeArr = arrayOf(
-            "1 Jan", "1 Jan", "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "6 Jan","7 Jan","8 Jan","9 Jan","9 Jan"
+            "1 Jan",
+            "2 Jan",
+            "3 Jan",
+            "4 Jan",
+            "5 Jan",
+            "6 Jan",
+            "7 Jan",
+            "8 Jan",
+            "9 Jan"
         )
         val timeArrUnique = arrayOf(
-            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "7 Jan","8 Jan","9 Jan"
+            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan", "6 Jan", "7 Jan", "8 Jan", "9 Jan"
         )
 
         val datas: MutableList<LineCharViewKotlin.Data> = ArrayList()
@@ -201,6 +236,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
      */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        this.canvas = canvas
         canvas.drawColor(Color.TRANSPARENT)
         canvas.translate(
             0f,
@@ -215,6 +251,25 @@ class LineCharViewKotlin @JvmOverloads constructor(
         drawLine(canvas)
 
         drawLinePoints(canvas)
+
+//        if (linePointsText != null) {
+//
+//            drawLinePointText(
+//                canvas,
+//                text!!,
+//                linePointsText!!.x.toFloat(),
+//                linePointsText!!.y.toFloat(),
+//            )
+//
+//        }
+        for ((key, value) in dataPointList) {
+            drawLinePointText(
+                canvas,
+                value.str,
+                value.x,
+                value.y,
+            )
+        }
 
         if (isFilled)
             drawFill(canvas)
@@ -374,19 +429,23 @@ class LineCharViewKotlin @JvmOverloads constructor(
         if (isPlayAnim) {
             pointCount = Math.round(currentValue * linePoints!!.size)
         }
+        val list = ArrayList<Any>()
         for (i in 0 until pointCount) {
             val point = linePoints!![i] ?: break
+
+
             canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), pointWidth, pointPaint!!)
-            if (isPointTextVisible) {
-                drawLinePointText(
-                    canvas,
-                    dataList1[i].value.toString(),
-                    point.x.toFloat(),
-                    point.y.toFloat()
-                )
-            }
+
+//            drawLinePointText(
+//                canvas,
+//                dataList1[i].value.toString(),
+//                point.x.toFloat(),
+//                point.y.toFloat()
+//            )
 
         }
+
+
     }
 
 
@@ -536,6 +595,56 @@ class LineCharViewKotlin @JvmOverloads constructor(
         refreshLayout()
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        super.onTouchEvent(event)
+
+        val mX = x
+        val mY = mHeight / 2f + (viewDrawHeight + topSpace + bottomSpace) / 2f
+
+        val x = event!!.x.toInt()
+        val y = event.y.toInt()
+        //  xStored = x yStored = y
+        if (event.action === MotionEvent.ACTION_UP) {
+        } else if (event.action === MotionEvent.ACTION_DOWN) {
+            println("Touching down!")
+            var i = 0
+            for (point in linePoints!!) {
+//                if (rect.contains(x, y)) {
+                val approxX = Math.abs(x - point!!.x) < 10;
+                val approxY = Math.abs(mY + point!!.y - y) < 10;
+                if (approxX && approxY) {
+                    println("Touched Rectangle, start activity.${point!!.x} " + "${point!!.y}")
+
+                    if (!dataPointList.containsKey(dataList1[i].value!!.toString())) {
+                        dataPointList.put(
+                            dataList1[i].value!!.toString(),
+                            DrawPoint(
+                                point!!.x.toFloat(),
+                                point!!.y.toFloat(),
+                                dataList1[i].value!!.toString(),
+                            )
+                        )
+                    } else {
+                        dataPointList.remove(dataList1[i].value!!.toString())
+                    }
+
+
+//                                drawLinePointText (
+//                                canvas,
+//                        dataList1[i].value!!.toString(),
+//                        point!!.x.toFloat(),
+//                        point!!.y.toFloat(),
+//                    )
+                    invalidate()
+                }
+                i++;
+            }
+        } else if (event.action === MotionEvent.ACTION_MOVE) {
+        }
+        this.postInvalidate()
+        return true
+    }
+
     /**
      * Is area below line curve  filled
      */
@@ -565,6 +674,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         refreshLayout()
     }
 
+
     /**
      * Y-axis  data
      */
@@ -574,4 +684,6 @@ class LineCharViewKotlin @JvmOverloads constructor(
      * X-axis  data
      */
     class Time(var value: String)
+    class DrawPoint(var x: Float, var y: Float, var str: String)
+
 }

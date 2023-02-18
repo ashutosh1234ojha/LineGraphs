@@ -69,6 +69,8 @@ public class MyActivity extends AppCompatActivity implements SeekBar.OnSeekBarCh
             // set listeners
             chart.setOnChartValueSelectedListener(this);
             chart.setDrawGridBackground(false);
+            chart.setMaxVisibleValueCount(30);
+
 
             // create marker to display box when values are selected
             MyMarkerView mv = new MyMarkerView(this, R.layout.custom_marker_view);

@@ -58,8 +58,9 @@ class MyDemoChart : AppCompatActivity() {
         xAxis.valueFormatter = XAxisFormatter()
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
-          xAxis.labelCount=3
-        xAxis.granularity = 5f
+          xAxis.labelCount=30
+        xAxis.granularity = 1f
+//        lineChart.setVisibleXRange(3f,5f) // for scrolling
 
 
         val yAxisLeft = lineChart.axisLeft

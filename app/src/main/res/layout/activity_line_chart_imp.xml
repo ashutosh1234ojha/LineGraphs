@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.example.graphs.imp.LineCharImp
+                <com.example.graphs.double.LineCharViewKotlin
                     android:id="@+id/line_chart_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

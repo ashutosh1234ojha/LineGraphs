@@ -121,34 +121,34 @@ class LineCharViewKotlin @JvmOverloads constructor(
         tablePath = Path()
         fillPath = Path()
 
-        val dataArr = intArrayOf(
-            200, 200, 100, 20, 50, 80, 200,400,500,500,40,30,30
-        )
+//        val dataArr = intArrayOf(
+//            200, 200, 100, 20, 50, 80, 200,400,500,500,40,30,30
+//        )
+//
+//        val timeArr = arrayOf(
+//            "1 Jan", "1 Jan", "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "6 Jan","7 Jan","8 Jan","9 Jan","9 Jan"
+//        )
+//        val timeArrUnique = arrayOf(
+//            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "7 Jan","8 Jan","9 Jan"
+//        )
 
-        val timeArr = arrayOf(
-            "1 Jan", "1 Jan", "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "6 Jan","7 Jan","8 Jan","9 Jan","9 Jan"
-        )
-        val timeArrUnique = arrayOf(
-            "1 Jan", "2 Jan", "3 Jan", "4 Jan", "5 Jan","6 Jan", "7 Jan","8 Jan","9 Jan"
-        )
-
-        val datas: MutableList<LineCharViewKotlin.Data> = ArrayList()
-        val times: MutableList<LineCharViewKotlin.Time> = ArrayList()
-        val timesUnique: MutableList<LineCharViewKotlin.Time> = ArrayList()
-        for (value in dataArr) {
-            val data = LineCharViewKotlin.Data(value)
-            datas.add(data)
-        }
-        for (value in timeArr) {
-            val data = LineCharViewKotlin.Time(value)
-            times.add(data)
-        }
-
-        for (value in timeArrUnique) {
-            val data = LineCharViewKotlin.Time(value)
-            timesUnique.add(data)
-        }
-        setData(datas, times, timesUnique)
+//        val datas: MutableList<LineCharViewKotlin.Data> = ArrayList()
+//        val times: MutableList<LineCharViewKotlin.Time> = ArrayList()
+//        val timesUnique: MutableList<LineCharViewKotlin.Time> = ArrayList()
+//        for (value in dataArr) {
+//            val data = LineCharViewKotlin.Data(value)
+//            datas.add(data)
+//        }
+//        for (value in timeArr) {
+//            val data = LineCharViewKotlin.Time(value)
+//            times.add(data)
+//        }
+//
+//        for (value in timeArrUnique) {
+//            val data = LineCharViewKotlin.Time(value)
+//            timesUnique.add(data)
+//        }
+//        setData(datas, times, timesUnique)
 
 
         resetParam()

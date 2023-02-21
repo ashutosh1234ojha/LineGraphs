@@ -42,6 +42,8 @@ class LineCharImpActivity : AppCompatActivity() {
         val datas: MutableList<LineCharImp.Data> = ArrayList()
         val times: MutableList<LineCharImp.Time> = ArrayList()
         val timesUnique: MutableList<LineCharImp.Time> = ArrayList()
+         val dataList = mutableMapOf<String, MutableList<Int>>()
+
         for (value in dataArr) {
             val data = LineCharImp.Data(value)
             datas.add(data)
@@ -55,7 +57,15 @@ class LineCharImpActivity : AppCompatActivity() {
             val data = LineCharImp.Time(value)
             timesUnique.add(data)
         }
-        lineChartView!!.setData(datas, times, timesUnique)
+
+        for (i in times!!.indices) {
+            if (dataList.containsKey(times[i].value)) {
+                dataList[times[i].value!!]!!.add(datas[i]!!.value)
+            } else {
+                dataList[times[i].value] = mutableListOf(datas[i].value)
+            }
+        }
+        lineChartView!!.setData(datas, dataList, timesUnique)
         lineChartView!!.setIsFilled(true)
         lineChartView!!.setRulerYSpace(30)
         lineChartView!!.setStepSpace(50)

@@ -65,7 +65,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
     private val dataList = mutableMapOf<String, MutableList<Int>>()
     val timeList: MutableList<Time> = ArrayList()
-    val dataList1: MutableList<Data> = ArrayList()
+    val dataListNormal: MutableList<Data> = ArrayList()
 
     init {
         setupView()
@@ -170,7 +170,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
         stepEnd = stepStart + stepSpace * (dataList.size - 1)
         bottomSpace = tablePadding
         topSpace = bottomSpace
-        linePoints = arrayOfNulls(dataList1.size)  //Total values
+        linePoints = arrayOfNulls(dataListNormal.size)  //Total values
         isInitialized = false
     }
 
@@ -380,7 +380,7 @@ class LineCharViewKotlin @JvmOverloads constructor(
             if (isPointTextVisible) {
                 drawLinePointText(
                     canvas,
-                    dataList1[i].value.toString(),
+                    dataListNormal[i].value.toString(),
                     point.x.toFloat(),
                     point.y.toFloat()
                 )
@@ -494,23 +494,23 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
 
     fun setData(
-        dataList1: MutableList<Data>?,
+        dataListNormal: MutableList<Data>?,
         timeList1: MutableList<Time>?,
         timeListUnique: MutableList<Time>?
     ) {
 //         val dataList: MutableList<Data> = ArrayList()
 //         val timeList: MutableList<Time> = ArrayList()
-        if (timeListUnique == null || dataList1 == null) {
+        if (timeListUnique == null || dataListNormal == null) {
             throw RuntimeException("dataList cannot is null!")
         }
 //        if (dataList.isEmpty()) return
         if (timeListUnique.isEmpty()) return
 //        this.dataList.clear()
         this.timeList.clear()
-        this.dataList1.clear()
+        this.dataListNormal.clear()
 //        this.dataList.addAll(dataList)
         this.timeList.addAll(timeListUnique)
-        this.dataList1.addAll(dataList1)
+        this.dataListNormal.addAll(dataListNormal)
 //        maxValue = Collections.max(
 //            this.dataList
 //        ) { o1, o2 -> o1.value - o2.value }.value
@@ -521,17 +521,17 @@ class LineCharViewKotlin @JvmOverloads constructor(
 
         for (i in timeList1!!.indices) {
             if (dataList.containsKey(timeList1[i].value)) {
-                dataList[timeList1[i].value!!]!!.add(dataList1[i]!!.value)
+                dataList[timeList1[i].value!!]!!.add(dataListNormal[i]!!.value)
             } else {
-                dataList[timeList1[i].value] = mutableListOf(dataList1[i].value)
+                dataList[timeList1[i].value] = mutableListOf(dataListNormal[i].value)
             }
         }
 
         maxValue = Collections.max(
-            dataList1
+            dataListNormal
         ) { o1, o2 -> o1.value - o2.value }.value
         minValue = Collections.min(
-            dataList1
+            dataListNormal
         ) { o1, o2 -> o1.value - o2.value }.value
         refreshLayout()
     }

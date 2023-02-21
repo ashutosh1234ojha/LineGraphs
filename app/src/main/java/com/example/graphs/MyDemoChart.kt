@@ -13,8 +13,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.formatter.IValueFormatter
+
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -80,6 +79,7 @@ class MyDemoChart : AppCompatActivity() {
         list.add(Entry(1f, 40f))
         list.add(Entry(2f, 15f))
         list.add(Entry(30f, 8f))
+        list.add(Entry(300f, 18f))
         //    list.add(Entry(4f, 8000000f))
         //    list.add(Entry(5f, 80000f))
         //    list.add(Entry(6f, 58000f))
